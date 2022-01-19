@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { authService, signInWithEmailAndPassword } from '../firebase';
+import { useNavigate } from 'react-router-dom';
+import { authService, createUserWithEmailAndPassword } from '../firebase';
 
-const Auth = () => {
+const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [password2, setPassword2] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -16,6 +18,9 @@ const Auth = () => {
       case 'password':
         setPassword(value);
         break;
+      case 'password2':
+        setPassword2(value);
+        break;
       default:
         throw Error;
     }
@@ -23,12 +28,19 @@ const Auth = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (password !== password2) {
+      setError('패스워드가 일치하지 않습니다.');
+      return;
+    }
+
     try {
-      await signInWithEmailAndPassword(authService, email, password);
+      await createUserWithEmailAndPassword(authService, email, password);
+      navigate('/');
     } catch (error) {
       setError(error.message);
     }
   };
+
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -48,17 +60,19 @@ const Auth = () => {
           value={password}
           onChange={onChange}
         ></input>
-        <input type="submit" value="LogIn"></input>
+        <input
+          name="password2"
+          type="password"
+          placeholder="Password"
+          required
+          value={password2}
+          onChange={onChange}
+        ></input>
+        <input type="submit" value="SignUp"></input>
         {error}
       </form>
-      <div>
-        <Link to="/signup">
-          <button>Sign Up</button>
-        </Link>
-        <button>Continue with Google</button>
-      </div>
     </div>
   );
 };
 
-export default Auth;
+export default SignUp;
