@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { authService, signInWithEmailAndPassword } from '../firebase';
+import { authService, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from '../firebase';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -29,6 +29,13 @@ const Auth = () => {
       setError(error.message);
     }
   };
+
+  const onSocialClick = async (e) => {
+    const provider = new GoogleAuthProvider();
+    const data = await signInWithPopup(authService, provider);
+    console.log(data);
+  };
+
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -55,7 +62,9 @@ const Auth = () => {
         <Link to="/signup">
           <button>Sign Up</button>
         </Link>
-        <button>Continue with Google</button>
+        <button name="Google" onClick={onSocialClick}>
+          Continue with Google
+        </button>
       </div>
     </div>
   );
