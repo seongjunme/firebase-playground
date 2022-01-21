@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { dbService, collection, addDoc } from '../firebase';
+import React, { useEffect, useState } from 'react';
+import { dbService, collection, addDoc, getDocs } from '../firebase';
 
 const Home = () => {
   const [tweet, setTweet] = useState('');
+  const [tweets, setTweets] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const onChange = (e) => {
     const {
@@ -24,6 +26,18 @@ const Home = () => {
     }
   };
 
+  const getTweets = async () => {
+    const datas = [];
+    const results = await getDocs(collection(dbService, 'tweets'));
+    results.forEach((doc) => datas.push(doc.data()));
+    setTweets(datas);
+  };
+
+  useEffect(() => {
+    getTweets();
+    setLoading(false);
+  }, []);
+
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -36,6 +50,7 @@ const Home = () => {
         />
         <input type="submit" value="tweet" />
       </form>
+      {loading ? <div>Tweet Loading...</div> : tweets.map((el, i) => <div key={i}>{el.tweet}</div>)}
     </div>
   );
 };
