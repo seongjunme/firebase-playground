@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { dbService, collection, addDoc, getDocs } from '../firebase';
 
-const Home = () => {
+const Home = ({ userObj }) => {
   const [tweet, setTweet] = useState('');
   const [tweets, setTweets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,6 +19,7 @@ const Home = () => {
       await addDoc(collection(dbService, 'tweets'), {
         tweet,
         createAt: Date.now(),
+        creatorId: userObj.uid,
       });
       setTweet('');
     } catch (error) {
