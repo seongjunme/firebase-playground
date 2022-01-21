@@ -30,7 +30,10 @@ const Home = ({ userObj }) => {
 
   const getTweets = async () => {
     onSnapshot(query(collection(dbService, 'tweets'), orderBy('createdAt', 'desc')), (snapshot) => {
-      const tweetArr = snapshot.docs.map((doc) => doc.data());
+      const tweetArr = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setTweets(tweetArr);
       setLoading(false);
     });
@@ -52,7 +55,11 @@ const Home = ({ userObj }) => {
         />
         <input type="submit" value="tweet" />
       </form>
-      {loading ? <div>Tweet Loading...</div> : tweets.map((el, i) => <Tweet key={i} tweetObj={el} />)}
+      {loading ? (
+        <div>Tweet Loading...</div>
+      ) : (
+        tweets.map((el, i) => <Tweet key={i} tweetObj={el} isOwner={el.creatorId === userObj.uid} />)
+      )}
     </div>
   );
 };
