@@ -29,14 +29,18 @@ const Home = ({ userObj }) => {
 
   const getTweets = async () => {
     const datas = [];
-    const results = await getDocs(collection(dbService, 'tweets'));
-    results.forEach((doc) => datas.push(doc.data()));
-    setTweets(datas);
+    try {
+      const results = await getDocs(collection(dbService, 'tweets'));
+      results.forEach((doc) => datas.push(doc.data()));
+      setTweets(datas);
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(() => {
     getTweets();
-    setLoading(false);
   }, []);
 
   return (
