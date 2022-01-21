@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Tweet from '../components/Tweet';
 import { dbService, collection, addDoc, onSnapshot, query, orderBy } from '../firebase';
 
 const Home = ({ userObj }) => {
@@ -51,7 +52,7 @@ const Home = ({ userObj }) => {
         />
         <input type="submit" value="tweet" />
       </form>
-      {loading ? <div>Tweet Loading...</div> : tweets.map((el, i) => <div key={i}>{el.tweet}</div>)}
+      {loading ? <div>Tweet Loading...</div> : tweets.map((el, i) => <Tweet key={i} tweetObj={el} />)}
     </div>
   );
 };
