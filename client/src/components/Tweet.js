@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { dbService, doc, deleteDoc, updateDoc } from '../firebase';
+import { storageService, ref, deleteObject } from '../firebase';
 
-const Tweet = ({ tweetObj: { id, tweet }, isOwner }) => {
+const Tweet = ({ tweetObj: { id, tweet, attachmentURL }, isOwner }) => {
   const [editing, setEditing] = useState(false);
   const [newTweet, setNewTweet] = useState('');
 
@@ -10,6 +11,7 @@ const Tweet = ({ tweetObj: { id, tweet }, isOwner }) => {
     if (ok) {
       const docRef = doc(dbService, `tweets/${id}`);
       deleteDoc(docRef);
+      deleteObject(ref(storageService, attachmentURL));
     }
   };
 
@@ -46,6 +48,7 @@ const Tweet = ({ tweetObj: { id, tweet }, isOwner }) => {
       ) : (
         <>
           <h4>{tweet}</h4>
+          {attachmentURL && <img src={attachmentURL} alt={attachmentURL} width="100px" height="100px"></img>}
           {isOwner && (
             <>
               <button onClick={onDeleteClick}>Delete</button>
