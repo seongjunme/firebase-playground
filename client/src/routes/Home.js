@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { dbService, collection, addDoc, getDocs } from '../firebase';
+import { dbService, collection, addDoc, onSnapshot, query, orderBy } from '../firebase';
 
 const Home = ({ userObj }) => {
   const [tweet, setTweet] = useState('');
@@ -18,7 +18,7 @@ const Home = ({ userObj }) => {
     try {
       await addDoc(collection(dbService, 'tweets'), {
         tweet,
-        createAt: Date.now(),
+        createdAt: Date.now(),
         creatorId: userObj.uid,
       });
       setTweet('');
@@ -28,15 +28,11 @@ const Home = ({ userObj }) => {
   };
 
   const getTweets = async () => {
-    const datas = [];
-    try {
-      const results = await getDocs(collection(dbService, 'tweets'));
-      results.forEach((doc) => datas.push(doc.data()));
-      setTweets(datas);
+    onSnapshot(query(collection(dbService, 'tweets'), orderBy('createdAt', 'desc')), (snapshot) => {
+      const tweetArr = snapshot.docs.map((doc) => doc.data());
+      setTweets(tweetArr);
       setLoading(false);
-    } catch (e) {
-      console.log(e);
-    }
+    });
   };
 
   useEffect(() => {
